@@ -22,7 +22,7 @@ resource "aws_internet_gateway" "myapp-igw" {
 }
 
 resource "aws_default_route_table" "main-rtb" {
-  default_route_table_id = aws_vpc.myapp-vpc.default_route_table_id
+   vpc_id = aws_vpc.myapp-vpc.id
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.myapp-igw.id
@@ -30,6 +30,16 @@ resource "aws_default_route_table" "main-rtb" {
   tags = {
     Name = "${var.env_prefix}-main-rtb"
   }
+}
+
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.myapp-subnet-1.id
+  route_table_id = aws_route_table.main-rtb.id
+}
+
+resource "aws_route_table_association" "b" {
+  subnet_id      = aws_subnet.myapp-subnet-2.id
+  route_table_id = aws_route_table.main-rtb.id
 }
 
 resource "aws_default_security_group" "default-sg" {
